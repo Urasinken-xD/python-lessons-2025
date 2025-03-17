@@ -1,7 +1,7 @@
 import logging
 
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler
 
 from config import TOKEN
 
@@ -41,6 +41,25 @@ async def zuefa(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(f'{choice(zuefa_random)}')
 
 
+async def say_kyebord(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показывает клавиатуру"""
+    user = update.effective_user
+    log.info(f'Функция say_keybord вызвана пользователем {user}')
+
+    buttons = [
+        [InlineKeyboardButton('Раз', callback_data='Раз'),
+         InlineKeyboardButton('Два', callback_data='Два'),
+         InlineKeyboardButton('Три', callback_data='Три')],
+        [InlineKeyboardButton('Четыре', callback_data='Четыре'),
+         InlineKeyboardButton('Пять', callback_data='Пять')],
+        [InlineKeyboardButton('Шесть', callback_data='Шесть')]
+    ]
+    Keyboard = InlineKeyboardMarkup(buttons)
+
+    await query.edit_message_text(
+                                )
+
+
 async def say_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Рассказывает, какие ф-ции доступны у бота"""
     user = update.effective_user
@@ -51,7 +70,7 @@ async def say_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         'Я школьный бот, который может реагировать на следующие команды',
         '/hello - говорю привет',
         '/help, /start - покажу список доступных команд',
-        '/zuefa - сыграю с тобой в цуефа',
+        'Если хочешь поиграть со мной цуефа, просто напиши "камень", "ножницы" или "бумага"',
         '/random_number - напишу случайное число'
     ]
     text = '\n'.join(text)
