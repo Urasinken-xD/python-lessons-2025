@@ -1,12 +1,7 @@
 import logging
 
-<<<<<<< HEAD
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler
-=======
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
->>>>>>> origin/main
 
 from config import TOKEN
 
@@ -46,7 +41,6 @@ async def zuefa(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(f'{choice(zuefa_random)}')
 
 
-<<<<<<< HEAD
 async def say_kyebord(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показывает клавиатуру"""
     user = update.effective_user
@@ -66,8 +60,6 @@ async def say_kyebord(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                                 )
 
 
-=======
->>>>>>> origin/main
 async def say_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Рассказывает, какие ф-ции доступны у бота"""
     user = update.effective_user
@@ -78,11 +70,7 @@ async def say_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         'Я школьный бот, который может реагировать на следующие команды',
         '/hello - говорю привет',
         '/help, /start - покажу список доступных команд',
-<<<<<<< HEAD
         'Если хочешь поиграть со мной цуефа, просто напиши "камень", "ножницы" или "бумага"',
-=======
-        '/zuefa - сыграю с тобой в цуефа',
->>>>>>> origin/main
         '/random_number - напишу случайное число'
     ]
     text = '\n'.join(text)
