@@ -7,6 +7,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Messa
 from config import TOKEN
 
 from random import randint, choice
+from events import events_application_handler
 
 
 logging.basicConfig(
@@ -55,6 +56,7 @@ async def say_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         'Если хочешь поиграть со мной цуефа, просто напиши "камень", "ножницы" или "бумага"',
         '/random_number - напишу случайное число',
         '/say_keyboard - покажу клавиатуру'
+        '/events - покажет события'
     ]
     text = '\n'.join(text)
 
@@ -120,9 +122,13 @@ app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("Hello", hello))
 app.add_handler(CommandHandler(["Help", "Start"], say_help))
 app.add_handler(CommandHandler('keyboard', say_keybord))
+app.add_handler(CallbackQueryHandler(react_keyboard))
 app.add_handler(CommandHandler("Random_number", random_number))
+app.add_handler(events_application_handler)
 app.add_handler(MessageHandler(filters.Text(["камень", "ножницы", "бумага"]), zuefa))
 app.add_handler(MessageHandler(filters.ALL, echo))
 print('Бот запущен')
+
 app.run_polling()
+
 print('Бот приостоновлен')
