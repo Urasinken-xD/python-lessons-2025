@@ -1,7 +1,8 @@
 import logging
 
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.constants import ParseMode
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler
 
 from config import TOKEN
 
@@ -51,12 +52,57 @@ async def say_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         'Я школьный бот, который может реагировать на следующие команды',
         '/hello - говорю привет',
         '/help, /start - покажу список доступных команд',
-        '/zuefa - сыграю с тобой в цуефа',
-        '/random_number - напишу случайное число'
+        'Если хочешь поиграть со мной цуефа, просто напиши "камень", "ножницы" или "бумага"',
+        '/random_number - напишу случайное число',
+        '/say_keyboard - покажу клавиатуру'
     ]
     text = '\n'.join(text)
 
     await update.message.reply_text(text)
+
+
+async def say_keybord(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показывает клавиатуру"""
+    user = update.effective_user
+    log.info(f'Функция say_keybord вызвана пользователем {user}')
+
+    buttons = [
+        [InlineKeyboardButton('Раз', callback_data='Раз'),
+         InlineKeyboardButton('Два', callback_data='Два'),
+         InlineKeyboardButton('Три', callback_data='Три')],
+        [InlineKeyboardButton('Четыре', callback_data='Четыре'),
+         InlineKeyboardButton('Пять', callback_data='Пять')],
+        [InlineKeyboardButton('Шесть', callback_data='Шесть')]
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+
+    await update.message.reply_text(
+        text='Выберите опцию на кклавиатуре',
+        reply_markup=keyboard
+    )
+
+
+async def react_keyboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Реагирует на нажатие кнопки на клавиатуре"""
+    user = update.effective_user
+    log.info(f'Функция react_keyboard вызвана пользователем {user}')
+
+    query = update.callback_query
+
+    buttons = [
+        [InlineKeyboardButton('Раз', callback_data='Раз'),
+         InlineKeyboardButton('Два', callback_data='Два'),
+         InlineKeyboardButton('Три', callback_data='Три')],
+        [InlineKeyboardButton('Четыре', callback_data='Четыре'),
+         InlineKeyboardButton('Пять', callback_data='Пять')],
+        [InlineKeyboardButton('Шесть', callback_data='Шесть')]
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+
+    await query.edit_message_text(
+        text=query.data,
+        reply_markup=keyboard
+    )
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -73,10 +119,10 @@ app = ApplicationBuilder().token(TOKEN).build()
 #Регестрация обработчиков
 app.add_handler(CommandHandler("Hello", hello))
 app.add_handler(CommandHandler(["Help", "Start"], say_help))
+app.add_handler(CommandHandler('keyboard', say_keybord))
 app.add_handler(CommandHandler("Random_number", random_number))
 app.add_handler(MessageHandler(filters.Text(["камень", "ножницы", "бумага"]), zuefa))
 app.add_handler(MessageHandler(filters.ALL, echo))
 print('Бот запущен')
 app.run_polling()
 print('Бот приостоновлен')
-
