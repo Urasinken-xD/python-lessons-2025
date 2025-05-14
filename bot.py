@@ -5,7 +5,7 @@ from telegram.constants import ParseMode
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler
 
 from config import TOKEN
-
+from events import events_application_handler
 from random import randint, choice
 
 
@@ -116,7 +116,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 app = ApplicationBuilder().token(TOKEN).build()
 
 
-#Регестрация обработчиков
+# Регестрация обработчиков
 app.add_handler(CommandHandler("Hello", hello))
 app.add_handler(CommandHandler(["Help", "Start"], say_help))
 app.add_handler(CommandHandler('keyboard', say_keybord))

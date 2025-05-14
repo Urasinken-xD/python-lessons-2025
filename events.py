@@ -10,9 +10,11 @@ from telegram.ext import (ApplicationBuilder,
                           ConversationHandler,
                           filters)
 
+from services import get_worker_list
+
 
 log = logging.getLogger(__name__)
-WAIT_FOR_DATE, WAIT_FOR_PLACE = range(2)
+WAIT_FOR_DATE, WAIT_FOR_PLACE, WAIT_FOR_WORKER = range(3)
 
 
 async def ask_date(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -52,17 +54,39 @@ async def get_place(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer('Зафиксировали')
 
+    return await ask_worker(update, context)
+
+
+async def ask_worker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    log.info(f'ask_worker is triggered by {update.effective_user}')
+    workers = get_worker_list()
+    buttons = [[InlineKeyboardButton(text="Любой", callback_data="Любой")]]
+    for worker in workers:
+        buttons.append([InlineKeyboardButton(text=worker, callback_data=worker)])
+    keybord = InlineKeyboardMarkup(buttons)
+
+    query = update.callback_query
+    await query.edit_message_text(
+        text='Вам нужен конкретный человек?',
+        reply_markup=keybord
+    )
+    return WAIT_FOR_WORKER
+
+
+async def get_worker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    log.info(f'get_worker is triggered by {update.effective_user}')
+    query = update.callback_query
+    await query.answer('Принято')
+
     return await register_application(update, context)
 
 
 async def register_application(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     log.info(f'register_application is triggered by {update.effective_user}')
-    text = 'Заявка зарегистрирована'
-    await context.bot.send_message(
-        chat_id=update.effective_user.id,
-        text=text
-    )
-    return ConversationHandler.END
+    day = context.user_data["day"]
+    place = context.user_data["place"]
+
+
 
 
 events_application_handler = ConversationHandler(
